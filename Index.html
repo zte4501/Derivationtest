@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Golden Slot</title>
+  <style>
+    /* Estilo simple y amigable */
+    :root{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:linear-gradient(135deg,#fff8f0,#fff1e6);}
+    .card{background:#fff;padding:28px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);max-width:520px;text-align:center}
+    h1{margin:0 0 8px;font-size:20px}
+    p{margin:0 0 18px;color:#666}
+    .btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600;border:0;cursor:pointer}
+    .btn-primary{background:#d97706;color:#fff}
+    .btn-secondary{background:#f3f4f6;color:#111;margin-left:8px}
+    small{display:block;margin-top:12px;color:#999}
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>Pastelería Golden</h1>
+    <p>Te estamos conectando con uno de nuestros números de WhatsApp. Si la redirección no funciona, podés elegir manualmente abajo.</p>
+
+    <div id="actions">
+      <button class="btn btn-primary" id="openBtn">Ir a WhatsApp (redirección automática)</button>
+      <a class="btn btn-secondary" id="chooseBtn" href="#" onclick="openManual(event)">Elegir número manual</a>
+    </div>
+
+    <small>Si preferís usar otro texto inicial, edita la variable <code>mensaje</code> en el código.</small>
+  </div>
+
+  <script>
+    // ---------- CONFIGURACIÓN ----------
+    // Números en formato internacional (sin +, sin espacios)
+    const numbers = [
+      "541164397867",
+      "541126941389",
+      "541158640737",
+      "541160123512",
+      "541168609063"
+    ];
+
+    // Mensaje pre-cargado (opcional). Cambialo si querés.
+    const mensaje = encodeURIComponent("Hola! Quisiera maz info sobre Golden Slot 😊");
+
+    // Tiempo antes de redirigir automáticamente (ms). 0 = inmediata.
+    const redirectDelay = 1600; // 1600ms para que el usuario vea la card. Cambialo a 0 si querés sin espera.
+    // ------------------------------------
+
+    function elegirNumeroRandom() {
+      return numbers[Math.floor(Math.random() * numbers.length)];
+    }
+
+    function buildWaLink(number) {
+      // Si no querés mensaje pre-cargado, eliminá + "?text=" + mensaje
+      return "https://wa.me/" + number + "?text=" + mensaje;
+    }
+
+    // Redirección automática al cargar (después de redirectDelay)
+    document.getElementById("openBtn").addEventListener("click", () => {
+      // Forzar redirección si el usuario hace click
+      const num = elegirNumeroRandom();
+      window.location.href = buildWaLink(num);
+    });
+
+    // Inicia la redirección automática al cargar la página (opcional)
+    setTimeout(() => {
+      const num = elegirNumeroRandom();
+      window.location.href = buildWaLink(num);
+    }, redirectDelay);
+
+    // Opción: mostrar selector manual
+    function openManual(e) {
+      e.preventDefault();
+      const list = numbers.map(n => {
+        const display = n.replace(/^54/, ""); // muestra sin country code quedando más legible
+        return `<li style="margin:8px 0;">
+                  <a style="padding:10px 12px;border-radius:8px;background:#f8fafc;display:inline-block;text-decoration:none;color:#111"
+                     href="${buildWaLink(n)}" target="_blank" rel="noopener">
+                     Abrir WhatsApp ${display}
+                  </a>
+                </li>`;
+      }).join("");
+      // Reemplaza el contenido por la lista
+      document.getElementById("card").innerHTML = `
+        <h1>Pastelería Golden</h1>
+        <p>Elegí con cuál número de WhatsApp querés comunicarte:</p>
+        <ul style="list-style:none;padding:0;margin:0">${list}</ul>
+        <small style="display:block;margin-top:12px">Volverá a redirigir automáticamente si recargás la página.</small>
+      `;
+    }
+  </script>
+</body>
+  </html>
